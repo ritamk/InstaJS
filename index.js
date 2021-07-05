@@ -19,7 +19,7 @@ function sleep(ms) {
 
  /**
  * Returns a random index from an array.
- * @param {Array} items Array of strings.
+ * @param {Array<string>} items Array of strings.
  **/
 function rand(items) {
     // "|" for a kinda "int div"
@@ -144,6 +144,42 @@ async function profFollow(handle) {
     await home();
 }
  /**
+ * Goes to specified account and interacts with the followers of that account.
+ * @param {number} num Number of posts that are to interacted with.
+ * @param {number} numProf Number of profiles that are to be interacted with.
+ * @param {Array<string>} text Array of comments randomly selected and commented.
+ * @param {string} handle Username of the account that is to be visited.
+ **/
+async function followerInteract(num, numProf, text, handle) {
+    await user(handle);
+    await profFollower();
+    for (i = 0; i < numProf; i++) {
+        await followerToProf(i + 1);
+        if (await pvtAcc() == 0) {
+        }
+        else if (await postCount() == 0) {
+        }
+        else {
+            for (j = 0; j < num; j++) {
+                await follow();
+                await postSelect();
+                await postLike();
+                /* if commenting is not necessary, comment out the next line. */
+                await comment(rand(text));
+                await next();
+            }
+            await close();
+            for (k = 0; k < num + 1; k++) {
+                await browser.navigate().back();
+            }
+        }
+        await browser.navigate().back();
+        await browser.wait(until.elementLocated(By.xpath("//h1[contains(.,'Follower')]")), 4000).click();
+    }
+    await close();
+    await home();
+}
+ /**
  * Unfollows accounts from own following page.
  * @param {number} numProf Number of profiles to unfollow. "all" is also an argument
  * that unfollows all accounts.
@@ -171,7 +207,7 @@ async function ownUnfollow(numProf) {
  /**
  * Comments on posts in the explore page.
  * @param {number} num Number of posts to interact with.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  */
 async function exploreComment(num, text) {
@@ -188,7 +224,7 @@ async function exploreComment(num, text) {
  * Goes to accounts from posts in explore page and interacts with posts there.
  * @param {number} num Number of posts to interact with in the profile.
  * @param {number} numProf Number of profiles to visit from the explore page.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  **/
 async function exploreToProfile(num, numProf, text) {
@@ -213,7 +249,7 @@ async function exploreToProfile(num, numProf, text) {
  * Comments on posts in the top section of a tag page.
  * @param {string} hash The hastag who's tag page is to be reached.
  * @param {number} num Number of posts to be interacted with.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  **/
 async function tagTopComment(hash, num, text) {
@@ -230,7 +266,7 @@ async function tagTopComment(hash, num, text) {
  * Comments on posts in the recent section of a tag page.
  * @param {string} hash The hastag who's tag page is to be reached.
  * @param {number} num Number of posts to be interacted with.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  **/
 async function tagRecComment(hash, num, text) {
@@ -248,7 +284,7 @@ async function tagRecComment(hash, num, text) {
  * @param {string} hash The hastag who's tag page is to be reached.
  * @param {number} num Number of posts to interact with in the profile.
  * @param {number} numProf Number of profiles to visit from the tag page.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  **/
 async function tagToProfile(hash, num, numProf, text) {
@@ -276,15 +312,15 @@ async function tagToProfile(hash, num, numProf, text) {
  * Goes to a specified list of top accounts and interacts with each one of them.
  * @param {number} num Number of posts to ineract with.
  * @param {number} numProf Number of profiles to interact with (maximum is profiles.length()).
- * @param {Array} text Array of comments, if necessary.
- * @param {Array} profiles Array of profiles that are to be visited.
+ * @param {Array<string>} text Array of comments, if necessary.
+ * @param {Array<string>} profiles Array of profiles that are to be visited.
  **/
 async function celebProfile(num, numProf, text, profiles) {
     for (i = 0; i < numProf; i++) {
         await user(profiles[i]);
         /* if following the profile is not required, comment out the next line. */
         await follow();
-        /* if interacting with posts is not required, comment out the next line. */
+        /* if interacting with posts is not required, comment out the next line and close(). */
         for (j = 0; j < num; j++) {
             await postSelect();
             await comment(rand(text));
@@ -295,11 +331,24 @@ async function celebProfile(num, numProf, text, profiles) {
     await home();
 }
  /**
+ * Goes to accounts and interacts with their followers.
+ * @param {number} num Number of posts to interact with.
+ * @param {number} numFollowers Number of followers of the celeb to interact with. 
+ * @param {number} numProf Number of profiles to interact with (maximum is profiles.length()).
+ * @param {Array<string>} text Array of comments to be randomly chosen and commented.
+ * @param {Array<string>} profiles Array of profiles that are to be visited.
+ **/
+async function celebFollowerInteract(num, numFollowers, numProf, text, profiles) {
+    for (i = 0; i < numProf; i++) {
+        await followerInteract(num, numFollowers, text, profiles[i]);
+    }
+}
+ /**
  * Goes to top profiles directory and interacts with accounts there.
  * @param {number} num Number of posts to interact with inside profile page.
  * @param {number} numProf Number of profiles in the top profiles section
  * that are to be interacted with.
- * @param {Array} text Array of comments that are randomly
+ * @param {Array<string>} text Array of comments that are randomly
  * chosen and commented on posts.
  **/
 async function topProfile(num, numProf, text) {
@@ -469,12 +518,10 @@ async function homLike(n) {
                     await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Like'][@height = '24']")), 6000).click();
                 }
                 catch (e) {
-                    console.error(e);
-                        
+                    console.error("Couldn't find like button in home page: " + e);
                 }
             }
             else {
-    
             }
         }
     }
@@ -501,12 +548,10 @@ async function homDislike(n) {
                     await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Unlike'][@height = '24']")), 6000).click();
                 }
                 catch (e) {
-                    console.error(e);
-                        
+                    console.error("Couldn't find dislike button in home page: " + e);
                 }
             }
             else {
-    
             }
         }
     }
@@ -521,7 +566,7 @@ async function postLike() {
         await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Like'][@height = '24']")), 5000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't like selected post: " + e);
     }
 }
  /**
@@ -534,7 +579,7 @@ async function postDislike() {
         await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Unlike'][@height = '24']")), 5000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't dislike selected post: " + e);
     }
 }
  /**
@@ -551,7 +596,6 @@ async function comment(text) {
     catch (e) {
         if (e instanceof NoSuchElementError) {
             console.error("Couldn't locate post comment area.");
-
         }
         else if (e instanceof ElementNotInteractableError) {
             try {
@@ -568,13 +612,14 @@ async function comment(text) {
             }
         }
         else {
-            console.error(e);
+            console.error("Couldn't comment: " + e);
 
         }
     }
 }
  /**
  * Clicks the first picture in a profile page.
+ * If there are no posts in the profile, it returns 0.
  * If it can't do that, it tries skipping past the task.
  **/
 async function postSelect() {
@@ -583,7 +628,7 @@ async function postSelect() {
         await browser.wait(until.elementLocated(By.xpath("//article/div/div/div/div")), 10000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't select post in the profile page: " + e);
     }
 }
  /**
@@ -596,7 +641,7 @@ async function expSelect() {
         await browser.wait(until.elementLocated(By.xpath("//main/div/div/div/div/div[2]")), 6000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't select first post in the explore page: " + e);
     }
 }
  /**
@@ -609,7 +654,7 @@ async function topSelect() {
         await browser.wait(until.elementLocated(By.xpath("//article/div/div/div/div/div")), 6000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't select the top post in the tag page: " + e);
     }
 }
  /**
@@ -622,7 +667,7 @@ async function recSelect() {
         await browser.wait(until.elementLocated(By.xpath("//article/div[2]/div/div/div")), 6000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't select recent post in tag page: " + e);
     }
 }
  /**
@@ -634,9 +679,8 @@ async function next() {
     try {
         await browser.wait(until.elementLocated(By.xpath("//a[contains(.,'Next')]")), 2000).click();
     }
-    catch {
-        console.error("Couldn't locate the next button");
-        await close();
+    catch (e) {
+        console.error("Couldn't locate the next button: " + e);
     }
 }
  /**
@@ -648,9 +692,8 @@ async function prev() {
     try {
         await browser.wait(until.elementLocated(By.xpath("//a[contains(.,'Previous')]")), 2000).click();
     }
-    catch {
-        console.error("Couldn't locate the previous button");
-        await close();
+    catch (e) {
+        console.error("Couldn't locate the previous button: " + e);
     }
 }
  /**
@@ -662,9 +705,8 @@ async function close() {
     try {
         await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Close']")), 2000).click();
     }
-    catch {
-        console.error("Couldn't locate the close button");
-        await home();
+    catch (e) {
+        console.error("Couldn't locate the close button: " + e);
     }
 }
  /**
@@ -684,7 +726,6 @@ async function scroll(dir) {
             await browser.executeScript("arguments[0].scrollIntoView(true);", emo);
         }
         catch {
-
         }
     }
     else {
@@ -702,8 +743,8 @@ async function postCount() {
         let count = await posts.getAttribute("innerHTML");
         return Number(count);
     }
-    catch {
-        console.error("Couldn't find the post count, returning 0");
+    catch (e) {
+        console.error("Couldn't find the post count: " + e);
         return 0;
     }
 }
@@ -714,10 +755,10 @@ async function postCount() {
 async function follow() {
     await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Follow')]")), 2000).click();
+        await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Follow')]")), 10000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't find follow button: " + e);
     }
 }
  /**
@@ -735,7 +776,7 @@ async function unfollow() {
             await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Unfollow')]")), 4000).click();
         }
         catch (e) {
-            console.error(e);
+            console.error("Couldn't find unfollow button: " + e);
 
         }
     }
@@ -752,7 +793,7 @@ async function sugFollow(n) {
             await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Follow')]")), 4000).click();
         }
         catch (e) {
-            console.error(e);
+            console.error("Couldn't find follow button in suggestions page: " + e);
 
         }
     }
@@ -762,8 +803,7 @@ async function sugFollow(n) {
             await browser.wait(until.elementLocated(By.xpath(`div[${n}]/div[2]/div/div/span/a`)), 4000).click();
         }
         catch (e) {
-            console.error(e);
-
+            console.error("Couldn't go to profile from suggestions page: " + e);
         }
     }
 }
@@ -792,8 +832,8 @@ async function followingCount() {
         let count = await following.getAttribute("innerHTML");
         return Number(count);
     }
-    catch {
-        console.error("Couldn't find following count.");
+    catch (e) {
+        console.error("Couldn't find following count: " + e);
         return 0;
     }
 }
@@ -808,9 +848,34 @@ async function followerCount() {
         let count = await follower.getAttribute("innerHTML");
         return Number(count);
     }
-    catch {
-        console.error("Couldn't find follower count.");
+    catch (e) {
+        console.error("Couldn't find follower count: " + e);
         return 0;
+    }
+}
+ /**
+ * Clicks at the follower(s) button in a profile.
+ **/
+async function profFollower() {
+    await sleep(2);
+    try {
+        await browser.wait(until.elementLocated(By.xpath("//a[contains(.,'follower')]"))).click();
+    }
+    catch (e) {
+        console.error("Couldn't find the follower(s) button in profile: " + e);
+    }
+}
+ /**
+ * Goes to a profile from the follower/following menu sequentially.
+ * @param {number} n Index number of the account that is to be opened.
+ **/
+async function followerToProf(n) {
+    await sleep(1);
+    try {
+        await browser.wait(until.elementLocated(By.xpath(`//li[${n}]/div/div[2]/div/div/div/span`)), 5000).click();
+    }
+    catch (e) {
+        console.error("Couldn't find profile in follower menu: " + e);
     }
 }
  /**
@@ -820,10 +885,10 @@ async function followerCount() {
 async function profFollowing() {
     await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//a[text() = ' following']")), 5000).click();
+        await browser.wait(until.elementLocated(By.xpath("//a[contains(.,'following')]")), 5000).click();
     }
-    catch {
-        console.error("Couldn't find the following button in own profile.");
+    catch (e) {
+        console.error("Couldn't find the following button in own profile: " + e);
     }
 }
  /**
@@ -843,8 +908,8 @@ async function profUnfollow(n) {
     try {
         await browser.wait(until.elementLocated(By.xpath("//button[text() = 'Unfollow']")), 2000).click();
     }
-    catch {
-        console.error("Couldn't find the unfollow button in profile.");
+    catch (e) {
+        console.error("Couldn't find the unfollow button in profile: " + e);
     }
 }
  /**
@@ -857,7 +922,7 @@ async function postToProf() {
         await browser.wait(until.elementLocated(By.xpath("//a/img")), 5000).click();
     }
     catch (e) {
-        console.error(e);
+        console.error("Couldn't go from post to profile: " + e);
     }
 }
  /**
@@ -873,7 +938,7 @@ async function switchAcc() {
     }
     catch (e) {
         await home();
-        console.error(e);
+        console.error("Couldn't switch accounts: " + e);
     }
 }
  /**
@@ -885,12 +950,13 @@ async function topAccounts(n) {
     try {
         await browser.wait(until.elementLocated(By.xpath(`//li[${num}]/a`)), 5000).click();
     }
-    catch {
-        console.error("Couldn't find account in top accounts page.");
+    catch (e) {
+        console.error("Couldn't find account in top accounts page: " + e);
     }
 }
 
 /* Here is the command to export the functions in the imaginary "do" class. */
 export { startIG, stopIG, login, likeHome, dislikeHome, suggestedFollow,
             profFollow, ownUnfollow, exploreComment, exploreToProfile,
-            tagTopComment, tagRecComment, tagToProfile, celebProfile, topProfile };
+            tagTopComment, tagRecComment, tagToProfile, celebProfile, topProfile,
+            celebFollowerInteract, followerInteract };
