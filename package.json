@@ -1,0 +1,17 @@
+{
+  "name": "instajs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/selenium-webdriver": "^4.0.14",
+    "selenium-webdriver": "^4.0.0-beta.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ritam",
+  "license": "ISC",
+  "type": "module"
+}
