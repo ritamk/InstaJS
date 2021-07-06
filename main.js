@@ -1,6 +1,6 @@
 import * as I from "./index.js";
 
-/* List of top instagram accouts obtained via "./igtopscrape.js" scraping wiki. [] */
+/* List of top instagram accouts obtained via "./igtopscrape.js" scraping wiki. */
 let top = ["instagram", "cristiano", "therock", "arianagrande", "kyliejenner", "selenagomez", "kimkardashian", "leomessi", "beyonce", "justinbieber",
             "kendalljenner", "natgeo", "taylorswift", "jlo", "khloekardashian", "nike", "neymarjr", "nickiminaj", "mileycyrus", "virat.kohli",
             "kourtneykardash", "katyperry", "kevinhart4real", "ddlovato", "theellenshow", "realmadrid", "badgalriri", "zendaya", "iamcardib", "fcbarcelona",
