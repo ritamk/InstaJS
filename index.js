@@ -7,8 +7,6 @@ let browser = new Builder()
     .setFirefoxOptions(new Options().setProfile("./InstaJS"))
     .build();
 
-let i, j, k;
-
  /**
  * Attempts to make the processes stop for the duration of sleep (in seconds).
  * @param {number} ms Number of seconds to sleep.
@@ -79,7 +77,7 @@ async function dislikeHome(num) {
  * in the suggestions page.
  **/
 async function suggestedFollow(numProf) {
-    for (i = 0; i < numProf; i++) {
+    for (let i = 0; i < numProf; i++) {
         await suggested();
         /* if going into the profiles each time is not required,
         then just loop the line below and comment out the rest up till home(). */
@@ -153,28 +151,24 @@ async function profFollow(handle) {
 async function followerInteract(num, numProf, text, handle) {
     await user(handle);
     await profFollower();
-    for (i = 0; i < numProf; i++) {
+    for (let i = 0; i < numProf; i++) {
         await followerToProf(i + 1);
-        if (await pvtAcc() == 0) {
-        }
-        else if (await postCount() == 0) {
-        }
-        else {
-            for (j = 0; j < num; j++) {
-                await follow();
-                await postSelect();
+        if (await postCount() >= num && await pvtAcc() != 0) {
+            await follow();
+            await postSelect();
+            for (let j = 0; j < num; j++) {
                 await postLike();
                 /* if commenting is not necessary, comment out the next line. */
                 await comment(rand(text));
                 await next();
             }
             await close();
-            for (k = 0; k < num + 1; k++) {
+            for (let k = 0; k < num + 1; k++) {
                 await browser.navigate().back();
             }
         }
         await browser.navigate().back();
-        await browser.wait(until.elementLocated(By.xpath("//h1[contains(.,'Follower')]")), 4000).click();
+        await browser.wait(until.elementLocated(By.xpath("//h1[contains(.,'Follower')]")), 2000).click();
     }
     await close();
     await home();
@@ -189,12 +183,12 @@ async function ownUnfollow(numProf) {
     let n = await followingCount();
     await profFollowing();
     if (numProf == 'all') {
-        for (i = 0; i < n; i++) {
+        for (let i = 0; i < n; i++) {
             await profUnfollow(i);
         }
     }
     else {
-        for (i = 0, j = n; i < numProf /* || i < n || j > 0 */; i++, j--) {
+        for (let i = 0, j = n; i < numProf /* || i < n || j > 0 */; i++, j--) {
             // await profUnfollow(i + 1);
             /* when latest followed profiles are displayed below,
             use the below function and comment out the previous line. */
@@ -213,7 +207,7 @@ async function ownUnfollow(numProf) {
 async function exploreComment(num, text) {
     await explore();
     await expSelect();
-    for (i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
         await comment(rand(text));
         await next();
     }
@@ -228,15 +222,15 @@ async function exploreComment(num, text) {
  * chosen and commented on posts.
  **/
 async function exploreToProfile(num, numProf, text) {
-    for (i = 0; i < numProf; i++) {
+    for (let i = 0; i < numProf; i++) {
         await explore();
         await expSelect();
-        for (j = 0; j < i; j++) {
+        for (let j = 0; j < i; j++) {
             await next();
         }
         await postToProf();
         await postSelect();
-        for (k = 0; k < num; k++) {
+        for (let k = 0; k < num; k++) {
             await postLike();
             await comment(rand(text));
             await next();
@@ -255,7 +249,7 @@ async function exploreToProfile(num, numProf, text) {
 async function tagTopComment(hash, num, text) {
     await tag(hash);
     await topSelect();
-    for (i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
         await comment(rand(text));
         await next();
     }
@@ -272,7 +266,7 @@ async function tagTopComment(hash, num, text) {
 async function tagRecComment(hash, num, text) {
     await tag(hash);
     await recSelect();
-    for (i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
         await comment(rand(text));
         await next();
     }
@@ -288,18 +282,18 @@ async function tagRecComment(hash, num, text) {
  * chosen and commented on posts.
  **/
 async function tagToProfile(hash, num, numProf, text) {
-    for (i = 0; i < numProf; i++) {
+    for (let i = 0; i < numProf; i++) {
         await tag(hash);
         /* if recSelect is needed and not topSelect
         then keep next line and comment out topSelect(). */
         // await recSelect();
         await topSelect();
-        for (j = 0; j < i; j++) {
+        for (let j = 0; j < i; j++) {
             await next();
         }
         await postToProf();
         await postSelect();
-        for (k = 0; k < num; k++) {
+        for (let k = 0; k < num; k++) {
             await postLike();
             await next();
         }
@@ -316,12 +310,12 @@ async function tagToProfile(hash, num, numProf, text) {
  * @param {Array<string>} profiles Array of profiles that are to be visited.
  **/
 async function celebProfile(num, numProf, text, profiles) {
-    for (i = 0; i < numProf; i++) {
+    for (let i = 0; i < numProf; i++) {
         await user(profiles[i]);
         /* if following the profile is not required, comment out the next line. */
         await follow();
         /* if interacting with posts is not required, comment out the next line and close(). */
-        for (j = 0; j < num; j++) {
+        for (let j = 0; j < num; j++) {
             await postSelect();
             await comment(rand(text));
             await next();
@@ -339,8 +333,8 @@ async function celebProfile(num, numProf, text, profiles) {
  * @param {Array<string>} profiles Array of profiles that are to be visited.
  **/
 async function celebFollowerInteract(num, numFollowers, numProf, text, profiles) {
-    for (i = 0; i < numProf; i++) {
-        await followerInteract(num, numFollowers, text, profiles[i]);
+    for (let i = 0; i < numProf; i++) {
+        await followerInteract(num, numFollowers, text, profiles[i + 25]);
     }
 }
  /**
@@ -352,10 +346,10 @@ async function celebFollowerInteract(num, numFollowers, numProf, text, profiles)
  * chosen and commented on posts.
  **/
 async function topProfile(num, numProf, text) {
-    for (i = 0; i <= numProf; i++) {
+    for (let i = 0; i <= numProf; i++) {
         await topAcc();
         await topAccounts(i);
-        for (j = 0; j < num; j++) {
+        for (let j = 0; j < num; j++) {
             await postSelect();
             await comment(rand(text));
             await next();
@@ -504,7 +498,7 @@ async function topAcc() {
  **/
 async function homLike(n) {
     await home();
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         await sleep(5);
         try {
             await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Like'][@height = '24']")), 6000).click();
@@ -534,7 +528,7 @@ async function homLike(n) {
  **/
 async function homDislike(n) {
     await home();
-    for (i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
         await sleep(5);
         try {
             await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Unlike'][@height = '24']")), 6000).click();
@@ -563,7 +557,7 @@ async function homDislike(n) {
 async function postLike() {
     await sleep(1);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Like'][@height = '24']")), 5000).click();
+        await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Like'][@height = '24']")), 8000).click();
     }
     catch (e) {
         console.error("Couldn't like selected post: " + e);
@@ -576,7 +570,7 @@ async function postLike() {
 async function postDislike() {
     await sleep(1);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Unlike'][@height = '24']")), 5000).click();
+        await browser.wait(until.elementLocated(By.xpath("//*[name() = 'svg'][@aria-label = 'Unlike'][@height = '24']")), 8000).click();
     }
     catch (e) {
         console.error("Couldn't dislike selected post: " + e);
@@ -590,7 +584,7 @@ async function postDislike() {
 async function comment(text) {
     await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 5000).click();
+        await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 8000).click();
         await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 2000).sendKeys(text, Key.ENTER);
     }
     catch (e) {
@@ -601,7 +595,7 @@ async function comment(text) {
             try {
                 await scroll("top");
                 await sleep(1);
-                await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 5000).click();
+                await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 8000).click();
                 await sleep(2);
                 await browser.wait(until.elementLocated(By.xpath("//section[3]/div/form/textarea")), 2000).sendKeys(text, Key.ENTER);
                 console.error("Post comment area wasn't interactable, but commented.");
@@ -681,6 +675,7 @@ async function next() {
     }
     catch (e) {
         console.error("Couldn't locate the next button: " + e);
+        await close();
     }
 }
  /**
@@ -694,6 +689,7 @@ async function prev() {
     }
     catch (e) {
         console.error("Couldn't locate the previous button: " + e);
+        await close();
     }
 }
  /**
@@ -737,16 +733,16 @@ async function scroll(dir) {
  * If it can't do that, it returns 0.
  **/
 async function postCount() {
-    await sleep(2);
-    try {
-        let posts = await browser.wait(until.elementLocated(By.xpath("//li/span/span")), 5000)
+    await sleep(1);
+    // try {
+        let posts = await browser.wait(until.elementLocated(By.xpath("//li/span/span")), 2000)
         let count = await posts.getAttribute("innerHTML");
         return Number(count);
-    }
-    catch (e) {
-        console.error("Couldn't find the post count: " + e);
-        return 0;
-    }
+    // }
+    // catch (e) {
+    //     console.error("Couldn't find the post count: " + e);
+    //     return 0;
+    // }
 }
  /**
  * Clicks the follow button in any user's page.
@@ -755,7 +751,7 @@ async function postCount() {
 async function follow() {
     await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Follow')]")), 10000).click();
+        await browser.wait(until.elementLocated(By.xpath("//button[contains(.,'Follow')]")), 5000).click();
     }
     catch (e) {
         console.error("Couldn't find follow button: " + e);
@@ -812,9 +808,9 @@ async function sugFollow(n) {
  * If it's a private account, it returns 0, otherwise 1.
  **/
 async function pvtAcc() {
-    await sleep(1);
+    await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath("//h2[contains(.,'Private')]")), 6000);
+        await browser.wait(until.elementLocated(By.xpath("//h2[contains(.,'Private')]")), 1000);
         return 0;
     }
     catch {
@@ -899,10 +895,16 @@ async function profFollowing() {
 async function profUnfollow(n) {
     await sleep(2);
     try {
-        await browser.wait(until.elementLocated(By.xpath(`//li[${n}]/div/div[3]`)), 5000).click();
+        await browser.wait(until.elementLocated(By.xpath(`//li[${n}]/div/div[3]`)), 2000).click();
     }
     catch {
-        console.error("Couldn't find the following button in profile.");
+        try {
+            await scroll("two");
+            await browser.wait(until.elementLocated(By.xpath(`//li[${n}]/div/div[3]`)), 5000).click();
+        }
+        catch (e) {
+            console.error("Couldn't find the following button in profile: " + e);
+        }
     }
     await sleep(1);
     try {
